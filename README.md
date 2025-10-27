@@ -14,6 +14,15 @@ It listens to user messages, extracts expense details using **OpenAI**, and auto
 - OpenAI API
 - Google Sheets API
 
+## 🖼️ Project Screenshots
+
+### 🔹 AI Workflow (n8n)
+![Workflow](workflow_ai-agent.png)
+
+### 🔹 Google Sheets Output
+![Google Sheet Tracker](tracker_sheet.png)
+
+
 ## 📦 Files
 - `AI-Expense-Tracking-Agent.json` → n8n workflow export file
 
