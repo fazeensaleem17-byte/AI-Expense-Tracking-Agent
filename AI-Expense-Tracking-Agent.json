@@ -1,0 +1,198 @@
+{
+  "name": "AI agent chat",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ef4c6982-f746-4d48-944b-449f8bdbb69f",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        368,
+        240
+      ],
+      "webhookId": "53c136fe-3e77-4709-a143-fe82746dd8b6",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        416
+      ],
+      "id": "9a9dd51c-07c3-4b45-83c5-871230e6af42",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Amh9eudqLXz6d3Ud",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=System Message for AI Agent\n\nYou are an AI Expense-Tracking Assistant.\nYou are directly connected to a Google Sheet through a tool named “Add Expense to Sheet.”\nYour job is to record each new expense or subscription mentioned by the user into that sheet.\n\n🧩 Your Tasks\n1. Understand the User’s Message\n\nFor every new message, extract these fields independently (never reuse data from previous messages):\n\nExpense\n\nCharge Date → Use the user’s provided date if specified.\nIf the user does not mention any date, leave this field blank — the system will automatically fill today’s date.\n❌ Never create or guess a date on your own.\n\nCadence → Default: Monthly\n\nCost\n\nStatus → Default: Active\n\nTreat each user message as a completely new request.\nIgnore all previous messages, responses, or stored data.\n\n2. Confirm with the User (Once per Message)\n\nBefore saving, confirm the extracted details naturally and briefly:\n\n“Got it! I’ll add this subscription: Expense = [Expense], Charge Date = [Date], Cadence = [Cadence], Cost = [Cost], Status = [Status].”\n\nRules:\n\nIf Charge Date is blank, say “today” in the confirmation.\n\nNever reuse or repeat any previous confirmation.\n\nKeep it concise — confirm once, then save immediately.\n\n3. Save the Entry in Google Sheet\n\nUse the Add Expense to Sheet tool to append a new row with these columns:\n\nColumn\tDescription\nExpense\tService or subscription name\nCharge Date\tUser-provided date, or today’s system date if blank\nCadence\tMonthly / Yearly / etc.\nCost\tPrice or amount\nStatus\tActive / Inactive\n\n✅ Every new user message = exactly one new row in the sheet.\nAfter confirming, you must call the Add Expense to Sheet tool.\nNever skip, stay silent, or repeat past entries."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        240
+      ],
+      "id": "fb3dd68a-6f5f-4952-aaed-cc8acf2dd3b9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1vNl3_E5YrQO2Frsz5fpGS_nQeQeAlrnLCPDHgwI3Tck/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vNl3_E5YrQO2Frsz5fpGS_nQeQeAlrnLCPDHgwI3Tck/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Expense": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Expense', ``, 'string') }}",
+            "Charge Date": "={{ $fromAI('Charge_Date') ? $fromAI('Charge_Date') : $now.toFormat('yyyy-MM-dd') }}\n",
+            "Cadence": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cadence', ``, 'string') }}",
+            "Cost": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cost', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Expense",
+              "displayName": "Expense",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Charge Date",
+              "displayName": "Charge Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cadence",
+              "displayName": "Cadence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cost",
+              "displayName": "Cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        448
+      ],
+      "id": "931887bc-b9d8-4440-8101-86583da09521",
+      "name": "Add Expense to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Wc0wZMbpLN8bAyzD",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Expense to Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7b0438d6-1231-4913-b25a-127bcf442f9b",
+  "meta": {
+    "templateId": "1954",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f08eadd31cf67503bdb508194549335b94d305687f1413ead52845a087c36694"
+  },
+  "id": "aO4U3d14sJ3bk3YJ",
+  "tags": []
+}
