@@ -25,4 +25,4 @@ It listens to user messages, extracts expense details using **OpenAI**, and auto
 ## 👩‍💻 Author
 **Fazeen Saleem**  
 Bachelor of Science in Artificial Intelligence  
-🔗 [LinkedIn]([your-linkedin-url](https://www.linkedin.com/in/fazeen-saleem-53b00922b/)) | [GitHub](your-github-url)
+🔗 [LinkedIn](https://www.linkedin.com/in/fazeen-saleem-53b00922b/) | [GitHub](https://github.com/fazeensaleem17-byte)
